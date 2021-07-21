@@ -18,13 +18,14 @@
  *  History:
  *
  *  v1.0.0 - 2-Oct-2020 - Port from SmartThings, minor changes needed.
+ *  v1.0.1 - 21-7-21 - Minor cosmetic fixes
  *
  */
 
-String appVersion()   { return "1.0.0" }
+String appVersion()   { return "1.0.1" }
 def setVersion(){
 	state.name = "Battery Monitor"
-	state.version = "1.0.0"
+	state.version = "1.0.1"
 }
 
 definition(
@@ -32,7 +33,7 @@ definition(
 	namespace: "tyuhl",
 	author: "Tim Yuhl",
 	description: "Alert if low battery",
-	importUrl:"",
+	importUrl: "https://raw.githubusercontent.com/tyuhl/BatteryMon/main/BatteryMon.groovy",
 	category: "Convenience",
 	iconUrl: "",
 	iconX2Url: ""
@@ -68,11 +69,12 @@ def installed() {
 
 def updated() {
 	if (logEnable) log.debug "Updated with settings: ${settings}"
-	unschedule()
 	initialize()
 }
 
 def initialize() {
+	setVersion()
+	unschedule()
 	// Run at user specified time every day
 	// Second Minute Hour DayOfMonth Month DayOfWeek Year
 	// schedule("0 15 9 * * ?", check_batteries)
@@ -82,6 +84,7 @@ def initialize() {
 
 def check_batteries() {
 	def size, device, threshold, value, sms
+	log.info("Battery Monitor is doing daily battery check.")
 
 	for (int i = 0; i < 4; i++) {
 		size = settings["group_${i}"]?.size() ?: 0
